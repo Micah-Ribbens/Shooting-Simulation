@@ -1,0 +1,4 @@
+x_points_from_center:2
+y_points_from_center:2
+hub_height:1
+distance_from_hub:1
