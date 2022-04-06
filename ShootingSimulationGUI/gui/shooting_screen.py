@@ -25,15 +25,15 @@ class ShootingScreen(SubScreen):
                                   Point(hub.x_midpoint, hub.y_midpoint))
 
         start_arrow.color = red
-        arrow_to_hub = LineSegment(Point(start_xy[0], start_xy[1] + hub.bottom + scalar),
-                                   Point(hub.x_midpoint, hub.y_midpoint))
+        arrow_to_hub = LineSegment(Point(start_xy[0], start_xy[1] + hub.bottom + distance_from_hub),
+                                   Point(hub.x_midpoint, hub.y_coordinate))
         arrow_to_hub.color = purple
-        corrected_arrow = LineSegment(Point(start_xy[0], start_xy[1] + hub.bottom + scalar),
-                                      Point(new_xy[0], new_xy[1] + hub.bottom + scalar))
+        corrected_arrow = LineSegment(Point(start_xy[0], start_xy[1] + hub.bottom + distance_from_hub),
+                                      Point(new_xy[0], new_xy[1] + height_used_up))
         corrected_arrow.color = magenta
 
         robot_length = screen_length * .05
-        robot_start = GameObject(scalar * 2, start_arrow.start_point.y_coordinate, robot_length, robot_length)
+        robot_start = GameObject(start_arrow.start_point.x_coordinate, start_arrow.start_point.y_coordinate, robot_length, robot_length)
         robot_end = GameObject(arrow_to_hub.start_point.x_coordinate, arrow_to_hub.start_point.y_coordinate, robot_length, robot_length)
         robot_end.color = black
         robot_start.color = dark_green

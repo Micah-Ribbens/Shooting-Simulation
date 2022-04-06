@@ -13,10 +13,6 @@ public class Main {
             if (grid.get(i)[0] == 0 && grid.get(i)[1] == 0) {
                 data += "skipped_index:"+i+"\n";
             }
-
-            if (i == 13) {
-                System.out.println("STOP");
-            }
             data += DataGetter.getNewData(grid.get(i)[0], grid.get(i)[1], i + 1);
         }
         FileWriter fileWriter = new FileWriter("C:\\Users\\mdrib\\Downloads\\Robotics\\ShootingSimulation\\ShootingSimulationGUI\\data.txt");

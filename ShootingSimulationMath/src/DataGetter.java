@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class DataGetter {
     public static String getNewData(int x, int y, int testNumber) {
         // Givens
@@ -10,11 +12,14 @@ public class DataGetter {
         double deltaAngle = movementCorrector.getDeltaAngle();
         double newDistance = movementCorrector.getNewDistance();
 
+        DataReader dataGetter = new DataReader("data.txt");
+        int xPointsFromCenter = dataGetter.getInt("x_points_from_center");
+        int yPointsFromCenter = dataGetter.getInt("y_points_from_center");
         // TODO get help with finding these! Right now it ain't working
-        double deltaX = newDistance * Math.cos(robotFacingAngle + deltaAngle);
-        double deltaY = newDistance * Math.sin(robotFacingAngle + deltaAngle);
+        double deltaX =  xPointsFromCenter + movementCorrector.getXOffset();
+        double deltaY = -movementCorrector.getYOffset();
 
-        Point endPoint = new Point(DataGetter.convertToGUIX(deltaX + x), DataGetter.convertToGUIY(deltaY + y));
+        Point endPoint = new Point(deltaX, deltaY);
         Point startPoint = new Point(DataGetter.convertToGUIX(x), DataGetter.convertToGUIY(y));
         String lineStart = "test_number"+testNumber;
 
