@@ -47,9 +47,9 @@ class MainScreen(Screen):
 
         for x in range(number_of_tests):
             file_start = f"test_number{x + 1}"
-
-            if x == file_reader.get_int("skipped_index"):
-                continue
+            #
+            # if x == file_reader.get_int("skipped_index"):
+            #     continue
 
             self.delta_angles.append(file_reader.get_double(f"{file_start}delta_angle"))
             self.start_distances.append(file_reader.get_double(f"{file_start}start_distance"))

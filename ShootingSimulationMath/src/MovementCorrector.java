@@ -1,65 +1,52 @@
+import Utils.LinearInterpolatedTable;
+import Utils.Vector;
+
+import java.awt.*;
+import java.util.function.Supplier;
+
 // TODO go through and debug to see what is wrong try step by step because something is veeeeeery wrong!
 public class MovementCorrector {
-    double robotMovementAngle;
-    double robotVelocity;
-    double distanceFromHub;
-    double robotFacingAngle;
-    public MovementCorrector(double robotMovementAngle, double robotVelocity, double distanceFromHub, double robotFacingAngle) {
+    private double robotMovementAngle;
+    private double robotVelocity;
+    private double distanceFromHub;
+//    private double robotFacingAngle;
+    private LinearInterpolatedTable toHubShotTime;
+    double gridPointToFeet = 4;
+    int x;
+    int y;
+
+
+    public MovementCorrector(double robotMovementAngle, double robotVelocity, double distanceFromHub, int x, int y) {
         this.robotMovementAngle = robotMovementAngle;
         this.robotVelocity = robotVelocity;
         this.distanceFromHub = distanceFromHub;
-        this.robotFacingAngle = robotFacingAngle;
-    }
-    public double round(double number, int numberPlace) {
-        int temp = (int) (number * Math.pow(numberPlace, 10));
-        return temp / Math.pow(numberPlace, 10);
-    }
-    public double getDeltaAngle() {
-        double newDistance = getNewDistance();
-        double offset = getOffsetDistance();
-
-        // Using law of cosines
-        double fractionNumerator = Math.pow(offset, 2) - Math.pow(newDistance, 2) - Math.pow(distanceFromHub, 2);
-        double fractionDenominator = -2 * newDistance * distanceFromHub;
-        double fraction = round(fractionNumerator / fractionDenominator, 6);
-        return Math.acos(fraction);
+        this.x = x;
+        this.y = y;
+//        this.robotFacingAngle = robotFacingAngle;
+        toHubShotTime = new LinearInterpolatedTable(1);
+        toHubShotTime.addPoint(8 / gridPointToFeet, 1);
+        toHubShotTime.addPoint(21 / gridPointToFeet, 1.5);
     }
     public double getNewDistance() {
-        double xOffset = getXOffset();
-        double yOffset = getYOffset();
-
-        // Splitting up the distance from the hub assuming that the robot's position is (0, 0)
-        // Into x and y components to get the current point of where the robot is shooting
-        double currentYDistance = distanceFromHub * Math.cos(robotFacingAngle);
-        double currentXDistance = distanceFromHub * Math.sin(robotFacingAngle);
-        Point newPoint = new Point(currentXDistance + xOffset, currentYDistance + yOffset);
-
-        // Distance from the robot to the new point of shooting- robot is at (0, 0)
-        return getDistance(new Point(0, 0), newPoint);
+        return getBetweenVector().getMagnitude();
     }
-    public double getOffsetDistance() {
-        double xOffset = getXOffset();
-        double yOffset = getYOffset();
-        // Getting the distance from the hub center (0, 0) to the points from the offset
-        return getDistance(new Point(0, 0), new Point(xOffset, yOffset));
-    }
-    public double getXOffset() {
-        double xVelocityComponent = robotVelocity * Math.sin(robotMovementAngle);
-        // First number is in ft/s and second number is number of feet offset for the points; left is negative and right is positive
-        // NOTE: these are in grid points, which right now we are assuming is 10ft, so it is an easy conversion
-        Line xVelocityToOffset = new Line(new Point(0, 0), new Point(2, -.3));
-        return xVelocityToOffset.getY(xVelocityComponent);
-    }
-    public double getYOffset() {
-        double yVelocityComponent = robotVelocity * Math.cos(robotMovementAngle);
+    public Vector getBetweenVector() {
+        double timeToHub = toHubShotTime.get(distanceFromHub, 1);
+        Vector velocityVector = new Vector(Math.cos(robotMovementAngle) * robotVelocity, Math.sin(robotMovementAngle) * robotVelocity);
+        Vector phantomHubPos = velocityVector.scale(-timeToHub);
 
-        // First number is in ft/s and second number is number of feet offset for the point negative is down and positive is up
-        // NOTE: these are in grid points, which right now we are assuming is 10ft, so it is an easy conversion
-        Line yVelocityToOffset = new Line(new Point(0, 0), new Point(2, -.3));
+        RobotSimulator robotSimulator = new RobotSimulator();
+        Vector hubPosition = new Vector(x - robotSimulator.xPointsFromCenter, -y);
 
-        return yVelocityToOffset.getY(yVelocityComponent);
+        return new Vector(hubPosition, phantomHubPos);
     }
-    public double getDistance(Point point1, Point point2) {
-        return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+    public double getDeltaAngle() {
+        double timeToHub = toHubShotTime.get(distanceFromHub, 1);
+        Vector velocityVector = new Vector(Math.cos(robotMovementAngle) * robotVelocity, Math.sin(robotMovementAngle) * robotVelocity).scale(-1);
+        Vector phantomHubPos = velocityVector.clone().scale(-timeToHub);
+
+        RobotSimulator robotSimulator = new RobotSimulator();
+        Vector hubPosition = new Vector(x - robotSimulator.xPointsFromCenter, -y);
+        return phantomHubPos.getTheta() - hubPosition.getTheta();
     }
 }

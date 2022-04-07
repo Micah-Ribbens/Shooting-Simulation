@@ -14,13 +14,17 @@ function_runner = FunctionRunner()
 changer = Changer()
 
 file_reader = FileReader("C:\\Users\\mdrib\\Downloads\\Robotics\\ShootingSimulation\\data.txt")
-hub_height = file_reader.get_int("hub_height")
+data_reader = FileReader("C:\\Users\\mdrib\\Downloads\\Robotics\\ShootingSimulation\\ShootingSimulationGUI\\data.txt")
+hub_radius = file_reader.get_int("hub_height")
 distance_from_hub = file_reader.get_int("distance_from_hub")
 x_points_from_center = file_reader.get_int("x_points_from_center")
 y_points_from_center = file_reader.get_int("y_points_from_center")
+hub_point = data_reader.get_number_list("hubPoint")
+robot_start_point = data_reader.get_number_list("robotStart")
+
 
 space_taken_up_by_main_screen = screen_height * main_screen_total_percentage
-scalar_divider = max(x_points_from_center, y_points_from_center) * 2 + 1 + hub_height + distance_from_hub
+scalar_divider = max(x_points_from_center, y_points_from_center) * 2 + 1 + hub_radius + distance_from_hub
 scalar = (screen_height - space_taken_up_by_main_screen) / scalar_divider
-hub_height *= scalar
-distance_from_hub *= scalar
+hub_radius *= scalar
+
